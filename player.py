@@ -4,28 +4,28 @@ import random
 class Player:
     def __init__(self, p_id, is_human):
         self.p_id = p_id
-        self.num_die = 5
+        self.num_die = 2
         self.current_roll = None
         self.is_human = is_human
 
-    def get_move(self, current_call: tuple):
+    def get_move(self, current_call: tuple, palifico: bool):
         # implement strategy here and return call
         # @param current_call: (pips, quantity)
         # @return tuple: (pips, quantity) or str: "dudo"
         if self.is_human:
-            return self.get_human_move(current_call)
+            return self.get_human_move(current_call, palifico)
 
         if current_call[1] > 6:
             return "dudo"
 
         return current_call[0], current_call[1] + 1
 
-    def get_human_move(self, current_call):
+    def get_human_move(self, current_call, palifico):
         human_input = input("pID: " + str(self.p_id) + " | Current call: " + str(current_call)
-                            + " | Roll: " + str(self.current_roll) +
+                            + " | Roll: " + str(self.current_roll) + " | Palifico: " + str(palifico) +
                             "\n Enter a move: \"dudo\", or two numbers: ").lower()
 
-        if human_input == "dudo" or human_input == "d":
+        if human_input[0].lower() == "d":
             return "dudo"
 
         else:

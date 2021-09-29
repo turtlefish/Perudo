@@ -22,21 +22,30 @@ class Gamestate:
         return self.winner
 
     def play_turn(self):
-        move = self.players[self.turn].get_move(self.current_call)
+        move = self.players[self.turn].get_move(self.current_call, self.palifico)
 
         if move == "dudo":
+            if self.palifico:
+                self.palifico = False
+
             if self.is_call_valid():
                 self.players[self.turn].remove_die()
 
-                if self.players[self.turn].get_num_dice() <= 0:
+                if self.players[self.turn].get_num_dice() == 1:
+                    self.palifico = True
+
+                elif self.players[self.turn].get_num_dice() <= 0:
                     self.winner = 1 - self.turn
                     return
 
             else:
                 self.players[1 - self.turn].remove_die()
 
-                if self.players[self.turn].get_num_dice() <= 0:
-                    self.winner = 1 - self.turn
+                if self.players[1 - self.turn].get_num_dice() == 1:
+                    self.palifico = True
+
+                if self.players[1 - self.turn].get_num_dice() <= 0:
+                    self.winner = self.turn
                     return
 
                 self.change_turn()
@@ -44,7 +53,7 @@ class Gamestate:
             self.reset_round()
 
         else:
-            self.current_call = move
+            self.raise_call(move)
             self.change_turn()
 
     def reset_round(self):
@@ -83,11 +92,17 @@ class Gamestate:
         return self.current_call
 
     def raise_call(self, new_call):
+        print(self.palifico)
+
         # Raises the current call to a new call (pips, quantity)
         if new_call[0] > 6 or new_call[0] < 0 or not isinstance(new_call[0], int):
-            raise ValueError("Tried to call an invalid pip value: " + str(new_call[0]))
+            raise ValueError("Tried to call an invalid pip value, (must be from 1 to 6): " + str(new_call[0]))
 
-        if not isinstance(new_call[1], int):
+        elif self.palifico and self.current_call != (0, 0) and \
+                (new_call[0] != self.current_call[0] or new_call[1] <= self.current_call[1]):
+            raise ValueError("Tried to change pip value or didn't raise quantity in Palifico round: " + str(new_call))
+
+        elif not isinstance(new_call[1], int):
             raise ValueError("Tried to call a non-integer quantity: " + str(new_call[1]))
 
         elif new_call[0] >= self.current_call[0] and new_call[1] < self.current_call[1]:
