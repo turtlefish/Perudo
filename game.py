@@ -1,6 +1,5 @@
 import random
 from dataclasses import dataclass
-from typing import List
 
 import numpy as np
 
@@ -48,7 +47,7 @@ class Perudo:
 
         return mask
 
-    def get_valid_bids(self, state: GameState) -> List[Bid]:
+    def get_valid_bids(self, state: GameState) -> list[Bid]:
         bids = []
 
         if state.current_bid.num == 0 or state.current_bid.pip == 0:  # if this is the first bid
